@@ -11,7 +11,7 @@ mvn install
 # RUN
 - To buld and run via Maven exec this command:
 	```
-	mvn clean install exec:java -Dexec.mainClass=it.sperto.App -Dexec.args="'<input_files_path>' '<<score_py_path>>'"
+	mvn clean install exec:java -Dexec.mainClass=it.sperto.book.App -Dexec.args="'<input_files_path>' '<<score_py_path>>'"
 	```
 - To run via command line:
 ```

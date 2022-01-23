@@ -1,6 +1,6 @@
-package it.sperto;
+package it.sperto.book;
 
-import it.sperto.game.BookGame;
+import it.sperto.book.game.BookGame;
 
 import java.io.File;
 import java.time.Duration;

@@ -1,11 +1,13 @@
-package it.sperto.game.calculators;
+package it.sperto.book.game.calculators;
 
-import it.sperto.game.Book;
-import it.sperto.game.Library;
+import it.sperto.book.game.Book;
+import it.sperto.book.game.Library;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import static java.lang.System.out;
 
 public interface ScoreCalculator {
 
@@ -57,6 +59,7 @@ public interface ScoreCalculator {
         private static Random RANDOM = new Random();
 
         public void calculateLibraryScore(Library library, int days) {
+            //out.println(Thread.currentThread().getName()+" START calculateLibraryScore for "+library.getId());
             Collections.sort(library.getBooks(), Collections.reverseOrder());
             int totalBookScore = 0;
             int dayForScan = days - library.getSignupDay();
@@ -74,6 +77,7 @@ public interface ScoreCalculator {
             }
             float score = ((float) totalBookScore  )/ library.getSignupDay();
             library.setScore(score);
+            //out.println(Thread.currentThread().getName()+" END calculateLibraryScore for "+library.getId());
         }
     }
 

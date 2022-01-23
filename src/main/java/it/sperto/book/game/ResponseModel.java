@@ -1,4 +1,4 @@
-package it.sperto.game;
+package it.sperto.book.game;
 
 import java.util.ArrayList;
 import java.util.List;
