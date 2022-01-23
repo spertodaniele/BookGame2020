@@ -99,13 +99,10 @@ public class Judge {
 
         public void advance() {
             passedDays++;
-            if (isFinished()) {
-                library.signedUp = true;
-            }
         }
 
         public boolean isFinished() {
-            return passedDays > library.signupDays;
+            return passedDays >= library.signupDays;
         }
     }
 
@@ -165,7 +162,6 @@ public class Judge {
         public List<Book> books;
         public int signupDays;
         public int shipmentsPerDay;
-        public boolean signedUp;
 
         private Library(int id) {
             this.id = id;
