@@ -56,8 +56,8 @@ public class Judge {
 
         for (int day = 0; day < days; day++) {
             if (currentSignup != null && currentSignup.isFinished()) {
-                int lastTheoreticShipmentIndex = currentSignup.library.shipmentsPerDay * (days - day);
-                for (int s = 0; s < Math.min(currentSignup.shipments.size(), lastTheoreticShipmentIndex); s++) {
+                int shippableBooks = currentSignup.library.shipmentsPerDay * (days - day);
+                for (int s = 0; s < Math.min(currentSignup.shipments.size(), shippableBooks); s++) {
                     Book book = currentSignup.shipments.get(s).book;
                     if (!currentSignup.library.hasBook(book)) {
                         throw new RuntimeException("Library " + currentSignup.library.id + " does not have book " + book.id);
