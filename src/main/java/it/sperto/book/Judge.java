@@ -1,9 +1,6 @@
 package it.sperto.book;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,30 +12,33 @@ public class Judge {
     private List<Book> books;
     private List<Library> libraries;
 
-    public static void main(String... args) throws Exception {
+    public static int computeTotalScore(String basePath) throws Exception {
         int totalScore = 0;
-        File solutionsDirectory = new File("resources");
-        File scenariosDirectory = new File("resources");
+        File baseDir = new File(basePath);
 
-        for (File solution : solutionsDirectory.listFiles((dir, name) -> name.endsWith(".solution"))) {
+        for (File solution : baseDir.listFiles((dir, name) -> name.endsWith(".solution"))) {
             try {
-                File scenario = new File(scenariosDirectory, "/" + solution.getName().replace(".solution", ".txt"));
-                try (Reader scenarioIn = new InputStreamReader(new FileInputStream(scenario), StandardCharsets.US_ASCII);
-                     Reader solutionIn = new InputStreamReader(new FileInputStream(solution), StandardCharsets.US_ASCII)) {
-                    Judge judge = Judge.forScenario(scenarioIn);
-                    int score = judge.computeScore(solutionIn);
-                    System.out.printf("Solution for scenario %s scored %d%n", scenario, score);
-                    totalScore += score;
-                }
+                File scenario = new File(baseDir, "/" + solution.getName().replace(".solution", ".txt"));
+                totalScore += computeScore(scenario,solution);
             } catch (Exception e) {
                 throw new RuntimeException("Error in solution " + solution.getAbsolutePath(), e);
             }
         }
-
-        System.out.printf("Total score: %d%n", totalScore);
+        return totalScore;
     }
 
-    private int computeScore(Reader in) {
+    public static int computeScore(File scenario, File solution) throws Exception {
+        int totalScore = 0;
+        try (Reader scenarioIn = new InputStreamReader(new FileInputStream(scenario), StandardCharsets.US_ASCII);
+             Reader solutionIn = new InputStreamReader(new FileInputStream(solution), StandardCharsets.US_ASCII)) {
+            Judge judge = Judge.forScenario(scenarioIn);
+            int score = judge.computeScoreInternal(solutionIn);
+            totalScore += score;
+        }
+        return  totalScore;
+    }
+
+    private int computeScoreInternal(Reader in) {
         int score = 0;
         Scanner scanner = new Scanner(in);
         List<Signup> signups = listOfSize(scanner.nextInt());
