@@ -5,25 +5,15 @@ import java.util.List;
 import java.util.StringJoiner;
 
 public class Library implements Comparable<Library> {
-    static Integer instanceCount = 0;
     private int id;
     private int signupDay;
     private int bookPerDay;
     private int bookCanScan;
     private List<Book> books = new ArrayList<>();
-    private List<Integer> booksToScanOrder = new ArrayList<>();
     private float score = 0;
-    private int totalBookScore = 0;
 
     public Library(int id) {
-        synchronized (instanceCount) {
-            instanceCount++;
-        }
         this.id = id;
-    }
-
-    public static Integer getInstanceCount() {
-        return instanceCount;
     }
 
     public int getId() {
@@ -70,17 +60,6 @@ public class Library implements Comparable<Library> {
         this.score = score;
     }
 
-    public List<Integer> getBooksToScanOrder() {
-        return booksToScanOrder;
-    }
-
-    public void createScanBookList(){
-        for (Book book : this.getBooks()) {
-            this.booksToScanOrder.add(book.getId());
-        }
-    }
-
-
     @Override
     public String toString() {
         return new StringJoiner(", ", Library.class.getSimpleName() + "[", "]")
@@ -88,9 +67,7 @@ public class Library implements Comparable<Library> {
                 .add("signupDay=" + signupDay)
                 .add("bookPerDay=" + bookPerDay)
                 .add("books=" + books.size())
-                .add("booksToScanOrder=" + booksToScanOrder.size())
                 .add("score=" + score)
-                //.add("totalBookScore=" + totalBookScore)
                 .toString();
     }
 

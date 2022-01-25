@@ -1,13 +1,11 @@
 package it.sperto.book.game;
 
-import it.sperto.book.game.calculators.ScoreCalculator;
+import it.sperto.book.game.calculators.RatingCalculator;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,16 +32,12 @@ public class BookGame {
 
     public String play(File resourceFilepath) throws Exception {
         this.init(resourceFilepath);
-        ScoreCalculator scoreCalculator = new ScoreCalculator.TimeAndParralelScoreCalculator();
+        RatingCalculator ratingCalculator = new RatingCalculator.BestRatingCalculator();
         Collections.sort(libraries, Collections.reverseOrder());
         for (int daysRemainig = DAYS; daysRemainig > 0; ) {
             if (libraries.size() == 0) break;
-            calculateLibrariesScore(scoreCalculator, daysRemainig);
-            Collections.sort(libraries, Collections.reverseOrder());
-            Library choice = libraries.get(0);
-            choice.createScanBookList();
+            Library choice = ratingCalculator.computeBestLibrary(libraries, daysRemainig);
             libraries.remove(0);
-            //out.println("libraries size="+libraries.size()+" selectd id="+choice.toString());
             daysRemainig -= choice.getSignupDay();
             solution.addLibraryLines(choice);
             cleanBookScore(choice);
@@ -58,23 +52,8 @@ public class BookGame {
         return solutionPath;
     }
 
-    private void calculateLibrariesScore(ScoreCalculator scoreCalculator, int dayRemaining) {
-        for (Library library : libraries) {
-            scoreCalculator.calculateLibraryScore(library, dayRemaining);
-        }
-    }
-
-    private void calculateLibrariesScoreMultiT(ScoreCalculator scoreCalculator, int dayRemaining) throws InterruptedException {
-        ExecutorService es = Executors.newFixedThreadPool(3);
-        for(Library library : libraries) {
-            es.execute(() -> scoreCalculator.calculateLibraryScore(library, dayRemaining));
-        }
-        es.shutdown();
-        es.awaitTermination(10, TimeUnit.MINUTES);
-    }
 
     private void cleanBookScore(Library library) {
-        //long startTime = System.nanoTime();
         for (Book libraryBook : library.getBooks()) {
             for (Book book : allBooks) {
                 if (book.equals(libraryBook)) {
@@ -82,9 +61,6 @@ public class BookGame {
                 }
             }
         }
-        //long estimatedTime = (System.nanoTime() - startTime)/1_000_000;
-        //long heapSize = Runtime.getRuntime().totalMemory();
-        //out("cleanBookScore - " + (heapSize/1_000_000) +"MB, "+estimatedTime+"ms");
     }
 
     private void cleanLibraries(Library library, int dayRemining) {

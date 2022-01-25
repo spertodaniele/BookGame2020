@@ -31,7 +31,7 @@ public class ResponseModel {
 
         public ResponseLibraryLine(Library library) {
             this.libraryId = library.getId();
-            this.booksIds = library.getBooksToScanOrder();
+            this.booksIds = library.getBooks().stream().map(book -> book.getId()).collect(Collectors.toList());
         }
 
         String printBooksLine() {

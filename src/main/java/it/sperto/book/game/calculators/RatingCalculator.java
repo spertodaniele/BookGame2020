@@ -7,15 +7,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import static java.lang.System.out;
+public abstract class RatingCalculator {
 
-public interface ScoreCalculator {
+    public Library computeBestLibrary(List<Library> libraries, int daysRemaining){
+        for (Library library : libraries) {
+            calculateLibraryRating(library, daysRemaining);
+        }
+        Collections.sort(libraries, Collections.reverseOrder());
+        Library ret = libraries.get(0);
+        Collections.sort(ret.getBooks(), Collections.reverseOrder());
+        return ret;
+    }
 
-    void calculateLibraryScore(Library library, int days);
+    abstract void calculateLibraryRating(Library library, int daysRemaining);
 
-    static class SimpleScoreCalculator implements ScoreCalculator {
+    static class SimpleRatingCalculator extends RatingCalculator {
 
-        public void calculateLibraryScore(Library library, int days) {
+        void calculateLibraryRating(Library library, int daysRemaining) {
             int score = 0;
             int dayScan = (int) Math.floor(library.getBooks().size() / library.getBookPerDay());
             int nDayTotal = library.getSignupDay() + dayScan;
@@ -29,12 +37,12 @@ public interface ScoreCalculator {
     }
 
 
-    static class TimedScoreCalculator implements ScoreCalculator {
+    public static class TimedRatingCalculator extends RatingCalculator {
 
-        public void calculateLibraryScore(Library library, int days) {
+        void calculateLibraryRating(Library library, int daysRemaining) {
             Collections.sort(library.getBooks(), Collections.reverseOrder());
             int totalBookScore = 0;
-            int dayForScan = days - library.getSignupDay();
+            int dayForScan = daysRemaining - library.getSignupDay();
             int nBookCanScan = dayForScan * library.getBookPerDay();
 
             List<Book> booooks = library.getBooks();
@@ -47,22 +55,17 @@ public interface ScoreCalculator {
                 nBookCanScan--;
                 if (nBookCanScan < 1) break;
             }
-            float score = ((float) totalBookScore / (float) days )/ library.getSignupDay();
+            float score = ((float) totalBookScore / (float) daysRemaining)/ library.getSignupDay();
             library.setScore(score);
         }
     }
 
-    static class TimeAndParralelScoreCalculator implements ScoreCalculator {
+    public static class BestRatingCalculator extends RatingCalculator {
 
-        private static float MIN = 0;
-        private static float MAX = 100;
-        private static Random RANDOM = new Random();
-
-        public void calculateLibraryScore(Library library, int days) {
-            //out.println(Thread.currentThread().getName()+" START calculateLibraryScore for "+library.getId());
+        void calculateLibraryRating(Library library, int daysRemaining) {
             Collections.sort(library.getBooks(), Collections.reverseOrder());
             int totalBookScore = 0;
-            int dayForScan = days - library.getSignupDay();
+            int dayForScan = daysRemaining - library.getSignupDay();
             int nBookCanScan = dayForScan * library.getBookPerDay();
 
             List<Book> booooks = library.getBooks();
@@ -77,18 +80,18 @@ public interface ScoreCalculator {
             }
             float score = ((float) totalBookScore  )/ library.getSignupDay();
             library.setScore(score);
-            //out.println(Thread.currentThread().getName()+" END calculateLibraryScore for "+library.getId());
         }
     }
 
-    static class RandomScoreCalculator implements ScoreCalculator {
+    public static class RandomRatingCalculator extends RatingCalculator {
 
         private static float MIN = 0;
         private static float MAX = 1_000_000;
         private static Random RANDOM = new Random();
 
-        public void calculateLibraryScore(Library library, int days) {
-            library.setScore(MIN + RANDOM.nextFloat() * (MAX - MIN));
+        void calculateLibraryRating(Library library, int daysRemaining) {
+             float score = MIN + RANDOM.nextFloat() * (MAX - MIN);
+            library.setScore(score);
         }
     }
 }

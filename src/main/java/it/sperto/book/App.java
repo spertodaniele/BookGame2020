@@ -44,9 +44,8 @@ public class App {
         Instant start = Instant.now();
         out.println("*****************************" + inputFile.getName() + "*****************************");
         BookGame game = new BookGame();
-        String outPath = "undefined";
         try {
-            outPath = game.play(inputFile);
+            String outPath = game.play(inputFile);
             int score = Judge.computeScore(inputFile, new File(outPath));
             out.printf("Solution for scenario %s scored %s%n", inputFile.getAbsolutePath(), DECIMAL_FORMAT.format(score));
         } catch (Exception e) {

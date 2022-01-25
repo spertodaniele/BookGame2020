@@ -4,20 +4,12 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class Book implements Comparable<Book> {
-    static Integer instanceCount = 0;
     private int id;
     private Integer score;
 
     public Book(int id, int score) {
-        synchronized (instanceCount){
-            instanceCount++;
-        }
         this.id = id;
         this.score = score;
-    }
-
-    public static Integer getInstanceCount(){
-        return instanceCount;
     }
 
     public int getId() {
